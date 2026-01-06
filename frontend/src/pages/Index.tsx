@@ -200,28 +200,30 @@ const Index = () => {
             
             {/* Favorite Books (starred) - grid like Library */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">Favorite Books</h3>
-              {bookList.filter((b) => b.rating >= 4.5).length === 0 ? (
-                <div className="text-sm text-gray-500">No favorite books yet.</div>
-              ) : (
-                <div className="max-h-64 overflow-auto pr-2">
-                  <div className="grid grid-cols-2 gap-4">
-                    {bookList
-                      .filter((b) => b.rating >= 4.5)
-                        .map((book) => (
-                        <div key={book.id} className="relative">
-                          <div className="absolute -top-2 -left-2 bg-yellow-100 text-yellow-700 rounded-full p-1 shadow z-20">
-                            <Star size={14} />
-                          </div>
-                          <div className="relative z-10">
-                            <BookCard book={book} variant="library" />
-                          </div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">Favorite Books</h3>
+
+            {bookList.filter((b) => b.rating >= 4.5).length === 0 ? (
+              <div className="text-sm text-gray-500">No favorite books yet.</div>
+            ) : (
+              <div className="max-h-64 overflow-auto pr-2 pt-4 rounded-lg">
+                <div className="grid grid-cols-2 gap-x-6 gap-y-10">
+                  {bookList
+                    .filter((b) => b.rating >= 4.5)
+                    .map((book) => (
+                      <div key={book.id} className="relative">
+                        <div className="absolute -top-1 -left-1 bg-yellow-100 text-yellow-700 rounded-full p-1 shadow z-20">
+                          <Star size={14} />
                         </div>
-                      ))}
-                  </div>
+
+                        <div className="relative z-10 scale-90 origin-top">
+                          <BookCard book={book} variant="library" />
+                        </div>
+                      </div>
+                    ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+          </div>
           </div>
         );
       default:

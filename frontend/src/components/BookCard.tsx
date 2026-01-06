@@ -70,7 +70,6 @@ const BookCover = ({
       decoding="async"
       className={`w-full h-full object-cover ${className}`}
       onError={() => {
-        // try next candidate
         if (idx < candidates.length - 1) setIdx((i) => i + 1);
       }}
     />

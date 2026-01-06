@@ -74,17 +74,35 @@ const BrowseLibrary = () => {
 
   const isInLibrary = (id: number) => myBooks.some((b) => b.id === id);
 
-  const addToMyBooks = (book: Book) => {
-    try {
-      // when adding, set default status to want-to-read if not present
-      const entry = { ...book, status: book.status || 'want-to-read' };
-      const updated = [...myBooks, entry];
-      setMyBooks(updated);
-      localStorage.setItem('myBooks', JSON.stringify(updated));
-    } catch (e) {
-      console.error('Failed to add book to library', e);
-    }
-  };
+const addToMyBooks = (book: Book) => {
+  try {
+    const raw = localStorage.getItem('myBooks');
+    const existing: Book[] = raw ? JSON.parse(raw) : [];
+
+    // cegah duplikat
+    if (existing.some((b) => b.id === book.id)) return;
+
+    const entry: Book = {
+      ...book,
+      status: book.status || 'want-to-read',
+    };
+
+    const updated = [...existing, entry];
+
+    localStorage.setItem('myBooks', JSON.stringify(updated));
+
+    // 🔥 INI YANG PALING PENTING
+    window.dispatchEvent(
+      new CustomEvent('myBooks:updated', { detail: updated })
+    );
+
+    // update state lokal supaya tombol + langsung hilang
+    setMyBooks(updated);
+  } catch (e) {
+    console.error('Failed to add book to library', e);
+  }
+};
+
   
 
   // (add-book feature removed)
