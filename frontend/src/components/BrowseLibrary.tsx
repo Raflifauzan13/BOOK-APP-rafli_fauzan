@@ -2,8 +2,8 @@ import { Search, Filter, Star, Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import BookCard from './BookCard';
+import { books as dummyBooks } from '../data/dummyData';
 
-// Define the Book interface
 interface Book {
   id: number;
   title: string;
@@ -19,56 +19,77 @@ const BrowseLibrary = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('all');
   const [books, setBooks] = useState<Book[]>([]);
+  const [myBooks, setMyBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch books from the backend
   useEffect(() => {
     const fetchBooks = async () => {
       try {
         setLoading(true);
         const response = await api.get<Book[]>('/api/books');
-        setBooks(response.data);
+        // prefer local cover files in public/cover/ named by title
+        setBooks(response.data.map((b) => ({ ...b, cover: `/cover/${encodeURIComponent(b.title)}.jpg` })));
         setError(null);
       } catch (err) {
-        setError('Failed to fetch books. Please try again later.');
-        console.error('Error fetching books:', err);
+        // fallback to local dummy data so browse still works offline
+        console.error('Error fetching books, falling back to dummy data:', err);
+        setBooks((dummyBooks as Book[]).map((b) => ({ ...b, cover: `/cover/${encodeURIComponent(b.title)}.jpg` })));
+        setError(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchBooks();
+    // load local myBooks (library)
+    try {
+      const raw = localStorage.getItem('myBooks');
+      if (raw) setMyBooks(JSON.parse(raw));
+    } catch (e) {}
   }, []);
 
   // Get unique genres from books
   const genres = ['all', ...new Set(books.map(book => book.genre))];
   
+  // Normalize function to improve search matching (case-insensitive, remove punctuation, ignore leading 'the')
+  const normalize = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/gi, '')
+      .replace(/^\s*the\s+/, '')
+      .trim();
+
   // Filter books based on search term and selected genre
-  const filteredBooks = books.filter(book => {
-    const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         book.author.toLowerCase().includes(searchTerm.toLowerCase());
+  const normalizedSearch = normalize(searchTerm);
+  const filteredBooks = books.filter((book) => {
+    const matchesSearch =
+      !normalizedSearch ||
+      normalize(book.title).includes(normalizedSearch) ||
+      normalize(book.author).includes(normalizedSearch) ||
+      normalize(book.genre).includes(normalizedSearch);
     const matchesGenre = selectedGenre === 'all' || book.genre === selectedGenre;
     return matchesSearch && matchesGenre;
   });
 
-  // Handle adding a book to library
-  const handleAddBook = async (bookId: number) => {
+  const isInLibrary = (id: number) => myBooks.some((b) => b.id === id);
+
+  const addToMyBooks = (book: Book) => {
     try {
-      await api.put(`/api/books/${bookId}`, {
-        status: 'want-to-read'
-      });
-      // Update local state
-      setBooks(books.map(book => 
-        book.id === bookId 
-          ? { ...book, status: 'want-to-read' }
-          : book
-      ));
-    } catch (err) {
-      console.error('Error adding book:', err);
-      setError('Failed to add book. Please try again.');
+      // when adding, set default status to want-to-read if not present
+      const entry = { ...book, status: book.status || 'want-to-read' };
+      const updated = [...myBooks, entry];
+      setMyBooks(updated);
+      localStorage.setItem('myBooks', JSON.stringify(updated));
+    } catch (e) {
+      console.error('Failed to add book to library', e);
     }
   };
+  
+
+  // (add-book feature removed)
+
+  // no cross-component sync required for removed feature
 
   if (loading) {
     return (
@@ -134,17 +155,20 @@ const BrowseLibrary = () => {
         {filteredBooks.map((book) => (
           <div key={book.id} className="relative">
             <BookCard book={book} variant="discover" />
-            {book.status === 'want-to-read' ? (
-              <button 
-                className="absolute top-4 right-4 bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors shadow-lg"
-                onClick={() => handleAddBook(book.id)}
+            {isInLibrary(book.id) ? (
+              book.status === 'read' && (
+                <div className="absolute top-4 right-4 bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm">
+                  Read
+                </div>
+              )
+            ) : (
+              <button
+                onClick={() => addToMyBooks(book)}
+                className="absolute top-3 right-3 bg-blue-500 text-white p-2 rounded-full shadow-md hover:bg-blue-600 transition-colors"
+                title="Add to My Books"
               >
                 <Plus size={16} />
               </button>
-            ) : (
-              <div className="absolute top-4 right-4 bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm">
-                {book.status}
-              </div>
             )}
           </div>
         ))}

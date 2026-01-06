@@ -38,7 +38,7 @@ export const books = [
     rating: 4.4,
     pages: 432,
     genre: "Romance",
-    status: "want-to-read" as const
+    status: "read" as const
   },
   {
     id: 5,
@@ -58,7 +58,7 @@ export const books = [
     rating: 4.7,
     pages: 309,
     genre: "Fantasy",
-    status: "read" as const
+    status: "want-to-read" as const
   },
   {
     id: 7,
@@ -79,6 +79,16 @@ export const books = [
     pages: 688,
     genre: "Sci-Fi",
     status: "reading" as const
+  },
+  {
+    id: 9,
+    title: "5 cm",
+    author: "Donny Dhirgantoro",
+    cover: "",
+    rating: 4.8,
+    pages: 320,
+    genre:  "Fiction",
+    status: "read" as const
   }
 ];
 

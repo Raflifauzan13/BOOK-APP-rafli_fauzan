@@ -47,6 +47,7 @@ def save_books(books_data):
     with open(DATA_FILE, 'w') as f:
         json.dump({'books': books_data}, f, indent=2)
 
+
 # Initialize books from JSON file
 books = load_books()
 
@@ -111,6 +112,9 @@ def delete_book(book_id):
             save_books(books)  # Save to JSON file
             return jsonify(deleted_book)
     return jsonify({'error': 'Book not found'}), 404
+
+
+
 
 if __name__ == '__main__':
     print(f"Starting Flask server on http://{FLASK_HOST}:{FLASK_PORT}")

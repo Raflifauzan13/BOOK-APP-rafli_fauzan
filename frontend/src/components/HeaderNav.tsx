@@ -3,9 +3,10 @@ import { Bell, Search } from 'lucide-react';
 
 interface HeaderNavProps {
   activeTab: string;
+  onSearchClick?: () => void;
 }
 
-const HeaderNav = ({ activeTab }: HeaderNavProps) => {
+const HeaderNav = ({ activeTab,onSearchClick }: HeaderNavProps) => {
   const getTitle = () => {
     switch (activeTab) {
       case 'library': return 'My Library';
@@ -22,7 +23,9 @@ const HeaderNav = ({ activeTab }: HeaderNavProps) => {
         <h1 className="text-xl font-bold text-gray-800">{getTitle()}</h1>
         <div className="flex items-center space-x-3">
           {activeTab !== 'discover' && (
-            <button className="p-2 text-gray-600 hover:text-gray-800 transition-colors">
+            <button
+            onClick={onSearchClick}
+            className="p-2 text-gray-600 hover:text-gray-800 transition-colors">
               <Search size={20} />
             </button>
           )}

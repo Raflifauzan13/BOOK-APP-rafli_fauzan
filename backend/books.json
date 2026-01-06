@@ -28,7 +28,7 @@
       "rating": 4.6,
       "pages": 328,
       "genre": "Dystopian",
-      "status": "reading"
+      "status": "read"
     },
     {
       "id": 4,
@@ -38,7 +38,7 @@
       "rating": 4.4,
       "pages": 432,
       "genre": "Romance",
-      "status": "want-to-read"
+      "status": "read"
     },
     {
       "id": 5,
@@ -68,7 +68,7 @@
       "rating": 4.9,
       "pages": 1216,
       "genre": "Fantasy",
-      "status": "want-to-read"
+      "status": "read"
     },
     {
       "id": 8,
@@ -78,7 +78,17 @@
       "rating": 4.3,
       "pages": 688,
       "genre": "Sci-Fi",
-      "status": "reading"
-    }
+      "status": "read"
+    },
+    {
+    "id": 9,
+    "title": "5 cm",
+    "author": "Donny Dhirgantoro",
+    "cover": "",
+    "rating": 4.8,
+    "pages": 320,
+    "genre":  "Fiction",
+    "status": "read"
+  }
   ]
 }
