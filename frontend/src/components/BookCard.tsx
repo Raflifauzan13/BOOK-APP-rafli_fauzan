@@ -1,5 +1,6 @@
 import { Star, BookOpen, Clock } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 
 interface Book {
   id: number;
@@ -45,17 +46,13 @@ const BookCover = ({
         candidates.push(`/cover/${hyphen}.${ext}`);
         candidates.push(`/cover/${underscore}.${ext}`);
       }
-      // also try a plain folder path without extension
       candidates.push(`/cover/${base}`);
       candidates.push(`/cover/${encoded}`);
       candidates.push(`/cover/${lower}`);
       candidates.push(`/cover/${hyphen}`);
     }
-    // lastly, try the provided src (may be remote)
     if (srcVal) candidates.push(srcVal);
-    // final fallback
     candidates.push('https://via.placeholder.com/300x450?text=No+Cover');
-    // remove duplicates and return
     return Array.from(new Set(candidates));
   };
 
@@ -77,10 +74,16 @@ const BookCover = ({
 };
 
 const BookCard = ({ book, variant = 'default' }: BookCardProps) => {
+  const navigate = useNavigate();
+  const goDetail = () => navigate(`/book/${book.id}`);
+
   /* ===================== COMPACT ===================== */
   if (variant === 'compact') {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200 hover:scale-105">
+      <div
+        onClick={goDetail}
+        className="cursor-pointer bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200 hover:scale-105"
+      >
         <div className="aspect-[3/4] relative bg-gray-100">
           <BookCover src={book.cover} alt={book.title} />
           <div className="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1">
@@ -102,7 +105,10 @@ const BookCard = ({ book, variant = 'default' }: BookCardProps) => {
   /* ===================== LIBRARY ===================== */
   if (variant === 'library') {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div
+        onClick={goDetail}
+        className="cursor-pointer bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+      >
         <div className="aspect-[3/4] relative bg-gray-100">
           <BookCover src={book.cover} alt={book.title} />
           <div
@@ -141,7 +147,10 @@ const BookCard = ({ book, variant = 'default' }: BookCardProps) => {
   /* ===================== DISCOVER ===================== */
   if (variant === 'discover') {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-all duration-200">
+      <div
+        onClick={goDetail}
+        className="cursor-pointer bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-all duration-200"
+      >
         <div className="flex space-x-3">
           <div className="w-16 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
             <BookCover src={book.cover} alt={book.title} />
@@ -168,7 +177,10 @@ const BookCard = ({ book, variant = 'default' }: BookCardProps) => {
 
   /* ===================== DEFAULT ===================== */
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+    <div
+      onClick={goDetail}
+      className="cursor-pointer bg-white rounded-xl shadow-sm border border-gray-100 p-4"
+    >
       <div className="flex space-x-4">
         <div className="w-20 h-28 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
           <BookCover src={book.cover} alt={book.title} />
